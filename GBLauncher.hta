@@ -1,0 +1,201 @@
+<html >
+	<head>
+		<title>GameBotics! 2016</title>
+		<HTA:APPLICATION
+			ID="WGSLauncher"
+			APPLICATIONNAME="WGS Launcher"
+			BORDER="none"
+			CAPTION="no"
+			SHOWINTASKBAR="yes"
+			SINGLEINSTANCE="yes"
+			SYSMENU="yes"
+			SCROLL="no"
+			PADDING="0"
+			ICON="Launcher.ico"
+		>
+		<script language = "vbscript">
+			Set objFSO = CreateObject("Scripting.FileSystemObject")
+			Set WshShell = CreateObject("Wscript.Shell")
+
+			Public Const dir = "S:\IN\Gaming Society"
+
+			Username = CreateObject("Wscript.Shell").ExpandEnvironmentStrings ("%USERNAME%")
+			Computername = CreateObject("Wscript.Shell").ExpandEnvironmentStrings ("%COMPUTERNAME%")
+
+			' Get name if possible through AD lookup
+			Dim objSysInfo, objUser, Name
+			if Left (Computername, 4) = "2372" then
+				Set objSysInfo = CreateObject("ADSystemInfo")
+				Set objUser = GetObject("LDAP://" & objSysInfo.UserName)
+				Name = objUser.givenName & " " & objUser.sn
+			else
+				Name = Username
+			End If
+
+			Sub Window_OnLoad
+				window.resizeTo 500,700
+				window.moveTo (screen.width - document.body.clientwidth)/2, (screen.height - document.body.clientheight)/2
+			End Sub
+			
+		Function Timestamp ()
+			strSafeDate = DatePart("yyyy",Date) & "-" & Right("0" & DatePart("m",Date), 2) & "-" & Right("0" & DatePart("d",Date), 2)
+			strSafeTime = Right("0" & Hour(Now), 2) & " " & Right("0" & Minute(Now), 2) & " " & Right("0" & Second(Now), 2)
+			Timestamp = strSafeDate & "," & strSafeTime
+		End Function
+
+		Function Hostmask (nick, user, host)
+			Hostmask = nick & "!" & user & "@" & host
+		End Function
+
+		Function HM ()
+			HM = Hostmask (Name, Username, Computername)
+		End Function
+
+		Sub WriteText (text, file)
+			If not objFSO.FileExists (dir & file) then
+				objFSO.CreateTextFile dir & file, True
+			End If
+			Set WriteFile = objFSO.OpenTextFile (dir & file, 8, False)
+			WriteFile.Write text & vbCrLf
+			WriteFile.Close
+		End Sub
+
+		Sub OverwriteText (text, file)
+			If not objFSO.FileExists (dir & file) then
+				objFSO.CreateTextFile dir & file, True
+			End If
+			Set WriteFile = objFSO.OpenTextFile (dir & file, 2)
+			WriteFile.Write text
+			WriteFile.Close
+		End Sub
+
+		Function ReadText (file)
+			dim text
+			If not objFSO.FileExists (dir & file) then
+				ReadText = ""
+			End If
+			Set ReadFile = objFSO.OpenTextFile (dir & file, 1)
+			text = ReadFile.ReadAll
+			ReadFile.Close
+			ReadText = text
+		End Function
+		
+			Sub AppendToLog (text)
+			WriteText Timestamp() & " " & HM() & " " & text, "\!ADMIN\Secret\Auditing\Logs\log.wlog"
+			End Sub
+			
+			Sub CloseWindow
+				WshShell.Run """%windir%\system32\taskkill.exe"" /im wscript.exe /f", 0
+				Window.Close
+			End Sub
+			
+			Sub WindowHalo
+				msgbox "You've opened Windowed Halo"
+				WshShell.CurrentDirectory = dir & "\Secret\Halo\"
+				params = " -window"
+				WshShell.Run Chr(34) & dir & "\Secret\Halo\haloce.exe" & Chr(34) & params
+			End Sub
+			
+			Sub Halo
+				msgbox "You've opened Full Screen Halo"
+				WshShell.CurrentDirectory = dir & "\Secret\Halo\"
+				WshShell.Run Chr(34) & dir & "\Secret\Halo\haloce.exe"
+			End Sub
+			
+			Sub MgTools
+				msgbox "You've opened Management Tools"
+			End Sub
+			
+		</script>
+	</head>
+	
+	<body id = "obj1" background = "GBLauncherBG.jpg" bgcolor="brown" style="padding:0;margin:0;"  style="-webkit-user-select: none; -khtml-user-select: none; -webkit-touch-callout : none  -moz-user-select: none; -o-user-select: none; user-select: none;>
+		<table width="500px" height="700px" style="padding:0;margin:0;" id="bgtable">
+			<td align="center" valign="middle">
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<center>
+					<input type="image"
+					name="playHaloFS"
+					src="PlayHalo_Default.png" 
+					onMouseover="playHaloFS.src='PlayHalo_Hover.png'"
+					onmouseout="playHaloFS.src='PlayHalo_Default.png'"
+					onclick= "Halo"
+					onmousedown="playHaloFS.src='PlayHalo_Clicked.png'"
+					onmouseup="playHaloFS.src='PlayHalo_Default.png'"
+					>
+				<br>
+					<input type="image"
+					name="playHaloWindow"
+					src="PlayWindowHalo_Default.png" 
+					onMouseover="playHaloWindow.src='PlayWindowHalo_Hover.png'"
+					onmouseout="playHaloWindow.src='PlayWindowHalo_Default.png'"
+					onclick= "WindowHalo"
+					onmousedown="playHaloWindow.src='PlayWindowHalo_Clicked.png'"
+					onmouseup="playHaloWindow.src='PlayWindowHalo_Default.png'"
+					>
+				<br>
+					<input type = "image"
+					name = "BgChange"
+					onclick = "changebg"
+					src="BGChange_Default.png"
+					onMouseOver="BgChange.src='BGChange_Hover.png'"
+					onMouseOut="BgChange.src='BGChange_Default.png'"
+					onMouseDown="BgChange.src='BGChange_Clicked.png'"
+					onMouseUp="BgChange.src='BGChange_Default.png'" 
+					>
+				<br>
+					<input type="image"
+					name="closewin"
+					src="Exit_Default.png"
+					onMouseOver="closewin.src='Exit_Hover.png'" 
+					onMouseOut="closewin.src='Exit_Default.png'" 
+					onclick="CloseWindow" 
+					onmousedown="closewin.src='Exit_Clicked.png'"
+					onMouseUp="closewin.src='Exit_Default.png'" 
+					>
+				</center>
+			</td>
+		</table>
+		<SCRIPT LANGUAGE="vbscript" >
+			Dim bgvalue
+			bgvalue = 1
+			Set Thing = document.getelementbyid("obj1")
+
+			Sub changebg
+				bgvalue = (bgvalue+1) mod 6
+				if bgvalue = 1 then
+					Thing.background = "GBLauncherBG.jpg"
+				elseif bgvalue = 2 then
+					Thing.background = "GBLauncherBG2.jpg"
+				elseif bgvalue = 3 then
+					Thing.background = "GBLauncherBG3.gif"
+				elseif bgvalue = 4 then
+					Thing.background = "GBLauncherBG4.gif"
+				elseif bgvalue = 5 then
+					Thing.background = "GBLauncherBG5.gif"
+				end if
+			end sub
+			
+			Sub changebg2
+				msgbox "Whoops! This button is reserved for the winner!"
+			end sub
+			
+		</script>
+	</body>
+</html>
